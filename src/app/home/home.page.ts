@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Todo } from './interfaces/todo';
+import { TaskService } from './providers/task.service';
+import { AlertInput } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +17,13 @@ export class HomePage {
   myTasks: Todo[] = [];
 
   // Constructor
-  constructor() { }
+  constructor( private taskService:TaskService ) { }
+
+  ionViewWillEnter(){
+    this.taskService.getTask().then(data=>{
+      this.myTasks = data;
+    })
+  }
 
   // Metodos ToDo Funcionalidades
   addTask() {
@@ -37,8 +45,11 @@ export class HomePage {
     this.modelIdTask = this.myTasks.indexOf(itemTask);
   }
 
-  removeTask(idTask){
-    this.myTasks = this.myTasks.filter(task => task.id !== idTask);
+  removeTask(id: any) {
+    this.taskService.deleteTask(id).then(resp => {
+      this.myTasks = resp;
+    }
+    );
   }
 
   public alertButtons = [
@@ -48,19 +59,28 @@ export class HomePage {
       },
     },
     {
-      text: 'Guardar', handler: (e: any) => {
-        this.myTasks.push({ id: this.idTask, title: e[0], description: e[1], isDone: false });
-        this.idTask++;
+      text: 'Guardar', handler: (e: AlertInput[]) => {
+        this.alertInputs.forEach(e=>{
+         return e.value = '';
+        });
+        const newTask = { title: e[0], description: e[1] }
+        this.taskService.saveTask(newTask).then(resp => {
+          this.myTasks = resp;
+        });
       },
     },
   ];
 
-  public alertInputs = [
+  public alertInputs: AlertInput[] = [
     {
       placeholder: 'Titulo',
+      id: 'title',
+      value: ''
     },
     {
       placeholder: 'Descripcion',
+      id: 'description',
+      value: '',
       attributes: {
         maxlength: 140,
       },
