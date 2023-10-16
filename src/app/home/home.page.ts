@@ -32,19 +32,18 @@ export class HomePage {
     this.alertInputs = [
       {
         placeholder: 'Titulo',
+        id: 'title',
+        value: ''
       },
       {
         placeholder: 'Descripcion',
+        id: 'description',
+        value: '',
         attributes: {
           maxlength: 140,
         },
-      },
-      {
-        type: 'checkbox',
-        id: 'done',
-      },
-    ];
-
+      }
+    ]
     this.alertButtons = [
       {
         text: 'Cancelar', handler: () => {
@@ -86,11 +85,6 @@ export class HomePage {
           maxlength: 140,
         },
       },
-      {
-        type: 'checkbox',
-
-        id: 'done',
-      },
     ];
 
     this.alertButtons = [
@@ -102,13 +96,21 @@ export class HomePage {
       },
       {
         text: 'Actualizar', handler: (e: AlertInput[]) => {
-          const editTask = { title: e[0], description: e[1] }
+          const editTask = { title: e[0], description: e[1], isDone: false }
           this.taskService.updateTask(task[0].id, editTask).then(resp => {
             this.myTasks = resp;
           });
         },
       },
     ]
+  }
+
+  doneTask(id: any){
+    var task = this.taskService.getTaskId(id);
+    task[0].isDone = !task[0].isDone;
+    this.taskService.updateTask(task[0].id, task[0]).then(resp => {
+      this.myTasks = resp;
+    });
   }
 
   removeTask(id: any) {
@@ -118,28 +120,9 @@ export class HomePage {
     );
   }
 
-  public alertButtons = [
 
-  ];
 
-  public alertInputs: AlertInput[] = [
-    {
-      placeholder: 'Titulo',
-      id: 'title',
-      value: ''
-    },
-    {
-      placeholder: 'Descripcion',
-      id: 'description',
-      value: '',
-      attributes: {
-        maxlength: 140,
-      },
-    },
-    {
-      type: 'checkbox',
+  public alertButtons = [];
 
-      id: 'done',
-    },
-  ];
+  public alertInputs: AlertInput[] = [];
 }

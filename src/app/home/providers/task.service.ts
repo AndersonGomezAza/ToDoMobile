@@ -34,6 +34,7 @@ export class TaskService {
       if(t.id == id){
         t.title = task.title;
         t.description = task.description;
+        t.isDone = task.isDone;
       }
     });
     return this.storage.set('tasks', this.tasks);

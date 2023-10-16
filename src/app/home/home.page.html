@@ -9,12 +9,15 @@
 
   <ion-list lines="full">
     <ion-item-sliding *ngFor="let item of myTasks">
+      <ion-item-options side="start">
+        <ion-item-option (click)="doneTask(item.id)" color="success"><ion-icon name="checkbox"></ion-icon></ion-item-option>
+      </ion-item-options>
       <ion-item (click)="detailTask(item)">
-        <ion-label>{{item.title}}</ion-label>
+        <ion-label [ngClass]="item.isDone?'isDone':''">{{item.title}}</ion-label>
       </ion-item>
-      <ion-item-options>
-        <ion-item-option (click)="editTask(item.id)">Editar</ion-item-option>
-        <ion-item-option color="danger" (click)="removeTask(item.id)">Eliminar</ion-item-option>
+      <ion-item-options side="end">
+        <ion-item-option [disabled]="item.isDone" (click)="editTask(item.id)"><ion-icon name="brush"></ion-icon></ion-item-option>
+        <ion-item-option color="danger" (click)="removeTask(item.id)"><ion-icon name="trash"></ion-icon></ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
