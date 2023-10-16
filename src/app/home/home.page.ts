@@ -12,6 +12,7 @@ export class HomePage {
 
   // Declaracion de variables
   isModalOpen = false;
+  isAlertOpen = false;
   idTask = 0;
   modelIdTask = 0;
   myTasks: Todo[] = [];
@@ -27,6 +28,7 @@ export class HomePage {
 
   // Metodos ToDo Funcionalidades
   addTask() {
+    this.isAlertOpen = !this.isAlertOpen;
     this.alertInputs = [
       {
         placeholder: 'Titulo',
@@ -37,12 +39,76 @@ export class HomePage {
           maxlength: 140,
         },
       },
+      {
+        type: 'checkbox',
+        id: 'done',
+      },
     ];
+
+    this.alertButtons = [
+      {
+        text: 'Cancelar', handler: () => {
+          console.log('Alert canceled');
+          this.isAlertOpen = false;
+        },
+      },
+      {
+        text: 'Guardar', handler: (e: AlertInput[]) => {
+          this.alertInputs.forEach(e=>{
+           return e.value = '';
+          });
+          const newTask = { title: e[0], description: e[1] }
+          this.taskService.saveTask(newTask).then(resp => {
+            this.myTasks = resp;
+          });
+        },
+      },
+    ]
   }
 
   detailTask(itemTask){
     this.isModalOpen = !this.isModalOpen;
     this.modelIdTask = this.myTasks.indexOf(itemTask);
+  }
+
+  editTask(id: any){
+    var task = this.taskService.getTaskId(id);
+    this.isAlertOpen = !this.isAlertOpen;
+    this.alertInputs = [
+      {
+        placeholder: 'Titulo',
+        value: task[0].title,
+      },
+      {
+        placeholder: 'Descripcion',
+        value: task[0].description,
+        attributes: {
+          maxlength: 140,
+        },
+      },
+      {
+        type: 'checkbox',
+
+        id: 'done',
+      },
+    ];
+
+    this.alertButtons = [
+      {
+        text: 'Cancelar', handler: () => {
+          console.log('Alert canceled');
+          this.isAlertOpen = false;
+        },
+      },
+      {
+        text: 'Actualizar', handler: (e: AlertInput[]) => {
+          const editTask = { title: e[0], description: e[1] }
+          this.taskService.updateTask(task[0].id, editTask).then(resp => {
+            this.myTasks = resp;
+          });
+        },
+      },
+    ]
   }
 
   removeTask(id: any) {
@@ -53,22 +119,7 @@ export class HomePage {
   }
 
   public alertButtons = [
-    {
-      text: 'Cancelar', handler: () => {
-        console.log('Alert canceled');
-      },
-    },
-    {
-      text: 'Guardar', handler: (e: AlertInput[]) => {
-        this.alertInputs.forEach(e=>{
-         return e.value = '';
-        });
-        const newTask = { title: e[0], description: e[1] }
-        this.taskService.saveTask(newTask).then(resp => {
-          this.myTasks = resp;
-        });
-      },
-    },
+
   ];
 
   public alertInputs: AlertInput[] = [
@@ -84,6 +135,11 @@ export class HomePage {
       attributes: {
         maxlength: 140,
       },
+    },
+    {
+      type: 'checkbox',
+
+      id: 'done',
     },
   ];
 }
